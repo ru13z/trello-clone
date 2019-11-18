@@ -5,16 +5,8 @@ const Column = {
         const spanAction_addNote = columnElement.querySelector('[data-action-addNote]')
 
         spanAction_addNote.addEventListener('click', function (event) {
-            const noteElement = document.createElement('div')
-            noteElement.classList.add('note')
-            noteElement.setAttribute('draggable', 'true')
-            noteElement.setAttribute('data-note-id', Note.IdCounter)
-
-            Note.IdCounter++
-
+            const noteElement = Note.create()
             columnElement.querySelector('[data-notes]').append(noteElement)
-            Note.process(noteElement)
-
             noteElement.setAttribute('contenteditable', 'true')
             noteElement.focus()
         })
@@ -29,14 +21,19 @@ const Column = {
             headerElement.removeAttribute('contenteditable', true)
         })
 
-        columnElement.addEventListener('dragover', function (event) {
-            event.preventDefault()
-        })
+        columnElement.addEventListener('dragover', Column.dragover)
 
-        columnElement.addEventListener('drop', function (event) {
-            if (Note.dragged) {
-                return columnElement.querySelector('[data-notes]').append(Note.dragged)
-            }
-        })
+        columnElement.addEventListener('drop', Column.drop)
+    },
+
+    dragover(event) {
+        event.preventDefault()
+    },
+
+    drop() {
+        if (Note.dragged) {
+            return this.querySelector('[data-notes]').append(Note.dragged)
+        }
     }
+
 }

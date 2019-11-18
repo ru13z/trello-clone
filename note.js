@@ -28,60 +28,72 @@ const Note = {
         noteElement.addEventListener('drop', Note.drop)
     },
 
-     dragstart(event) {
+    create() {
+        const noteElement = document.createElement('div')
+        noteElement.classList.add('note')
+        noteElement.setAttribute('draggable', 'true')
+        noteElement.setAttribute('data-note-id', Note.IdCounter)
+
+        Note.IdCounter++
+        Note.process(noteElement)
+        
+        return noteElement
+    },
+
+    dragstart(event) {
 
         Note.dragged = this
         this.classList.add('dragged')
         event.stopPropagation()
     },
-     dragend(event) {
-    
+    dragend(event) {
+
         Note.dragged = null
         this.classList.remove('dragged')
-    
+
         document.querySelectorAll('.note').forEach(x => x.classList.remove('under'))
     },
-     dragenter(event) {
+    dragenter(event) {
         if (this === Note.dragged) {
             return
         }
-    
+
         this.classList.add('under')
     },
-     dragover(event) {
+    dragover(event) {
         event.preventDefault()
         if (this === Note.dragged) {
             return
         }
-    
-    
+
+
     },
-     dragleave(event) {
+    dragleave(event) {
         if (this === Note.dragged) {
             return
         }
-    
+
         this.classList.remove('under')
     },
-     drop(event) {
+    drop(event) {
         event.stopPropagation()
         if (this === Note.dragged) {
             return
         }
-    
+
         if (this.parentElement === Note.dragged.parentElement) {
             const note = Array.from(this.parentElement.querySelectorAll('.note'))
             const indexA = note.indexOf(this)
             const indexB = note.indexOf(Note.dragged)
-    
+
             //console.log(indexA, indexB)
-    
+
             if (indexA < indexB) {
                 this.parentElement.insertBefore(Note.dragged, this)
             } else {
                 this.parentElement.insertBefore(Note.dragged, this.nextElementSibling)
             }
-    
+
         } else {
             this.parentElement.insertBefore(Note.dragged, this)
         }
