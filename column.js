@@ -3,6 +3,8 @@ const Column = {
 
     dragged: null,
 
+    dropped: null,
+
     process(columnElement) {
         const spanAction_addNote = columnElement.querySelector('[data-action-addNote]')
 
@@ -26,9 +28,9 @@ const Column = {
         columnElement.addEventListener('dragstart', Column.dragstart)
         columnElement.addEventListener('dragend', Column.dragend)
 
-        columnElement.addEventListener('dragenter', Column.dragenter)
+        // columnElement.addEventListener('dragenter', Column.dragenter)
         columnElement.addEventListener('dragover', Column.dragover)
-        columnElement.addEventListener('dragleave', Column.dragleave)
+        //columnElement.addEventListener('dragleave', Column.dragleave)
 
         columnElement.addEventListener('drop', Column.drop)
     },
@@ -46,34 +48,47 @@ const Column = {
     dragend(event) {
         Column.dragged.classList.remove('dragged')
         Column.dragged = null
-
+        Column.dropped = null
         document
             .querySelectorAll('.note')
             .forEach(noteElement => noteElement.setAttribute('draggable', true))
     },
 
-    dragenter(event) {
+    /*dragenter(event) {
         if (!Column.dragged || Column.dragged === this) {
             return
         }
         this.classList.add('under')
         console.log('dragenter')
-    },
+    },*/
     dragover(event) {
+
         event.preventDefault()
         event.stopPropagation()
+        if (Column.dragged === this) {
+            if (Column.dropped) {
+                Column.dropped.classList.remove('under')
+            }
+            Column.dropped = null
+        }
+
         if (!Column.dragged || Column.dragged === this) {
             return
         }
-        console.log('dragover')
+        Column.dropped = this
+        document
+            .querySelectorAll('.column')
+            .forEach(columnElement => columnElement.classList.remove('under'))
+
+        this.classList.add('under')
     },
-    dragleave(event) {
+    /*dragleave(event) {
         if (!Column.dragged || Column.dragged === this) {
             return
         }
         this.classList.remove('under')
         console.log('dragleave')
-    },
+    },*/
 
     drop() {
         if (Note.dragged) {
@@ -90,6 +105,8 @@ const Column = {
             } else {
                 document.querySelector('.columns').insertBefore(Column.dragged, this.nextElementSibling)
             }
+
+            document.querySelectorAll('.column').forEach(columnElement => columnElement.classList.remove('under'))
         }
     }
 

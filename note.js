@@ -1,5 +1,5 @@
 const Note = {
-    IdCounter: 8,
+    idCounter: 8,
     dragged: null,
 
     process(noteElement) {
@@ -32,9 +32,9 @@ const Note = {
         const noteElement = document.createElement('div')
         noteElement.classList.add('note')
         noteElement.setAttribute('draggable', 'true')
-        noteElement.setAttribute('data-note-id', Note.IdCounter)
+        noteElement.setAttribute('data-note-id', Note.idCounter)
 
-        Note.IdCounter++
+        Note.idCounter++
         Note.process(noteElement)
 
         return noteElement
