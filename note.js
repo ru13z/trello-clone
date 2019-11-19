@@ -36,7 +36,7 @@ const Note = {
 
         Note.IdCounter++
         Note.process(noteElement)
-        
+
         return noteElement
     },
 
@@ -47,14 +47,18 @@ const Note = {
         event.stopPropagation()
     },
     dragend(event) {
-
+        event.stopPropagation()
         Note.dragged = null
         this.classList.remove('dragged')
 
-        document.querySelectorAll('.note').forEach(x => x.classList.remove('under'))
+        document
+            .querySelectorAll('.note')
+            .forEach(x => x.classList.remove('under'))
+
     },
     dragenter(event) {
-        if (this === Note.dragged) {
+        event.stopPropagation()
+        if (!Note.dragged || this === Note.dragged) {
             return
         }
 
@@ -62,14 +66,15 @@ const Note = {
     },
     dragover(event) {
         event.preventDefault()
-        if (this === Note.dragged) {
+        if (!Note.dragged || this === Note.dragged) {
             return
         }
 
 
     },
     dragleave(event) {
-        if (this === Note.dragged) {
+        event.stopPropagation()
+        if (!Note.dragged || this === Note.dragged) {
             return
         }
 
@@ -77,7 +82,7 @@ const Note = {
     },
     drop(event) {
         event.stopPropagation()
-        if (this === Note.dragged) {
+        if (!Note.dragged || this === Note.dragged) {
             return
         }
 
