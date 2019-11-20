@@ -63,7 +63,7 @@ const Application = {
 
             for (const noteid of column.noteIds) {
                 const note = getNoteById(noteid)
-
+               // console.log(note)
                 const noteElement = Note.create(note.id, note.content)
                 columnElement.querySelector('[data-notes]').append(noteElement)
                 //console.log(note)

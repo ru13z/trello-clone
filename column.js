@@ -39,14 +39,13 @@ const Column = {
         const columnElement = document.createElement('div')
         columnElement.classList.add('column')
         columnElement.setAttribute('draggable', 'true')
+        
         if (id) {
             columnElement.setAttribute('data-column-id', id)
         } else {
             columnElement.setAttribute('data-column-id', Column.idCounter)
             Column.idCounter++
         }
-
-
         columnElement.innerHTML =
             `<p class="column-header">В плане</p>
 					<div data-notes></div>
@@ -55,7 +54,6 @@ const Column = {
 			    </p>`
 
         Column.process(columnElement)
-
         return columnElement
     },
 

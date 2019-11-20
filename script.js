@@ -1,6 +1,8 @@
-document
-    .querySelectorAll('.column')
-    .forEach(Column.process)
+Application.load()
+
+
+
+
 
 document
     .querySelector('[data-action-addColumn]')
@@ -9,8 +11,10 @@ document
         document.querySelector('.columns').append(columnElement)
     })
 
-document
+/*document
     .querySelectorAll('.note')
-    .forEach(Note.process)
+    .forEach(Note.process)*/
 
-
+/*document
+    .querySelectorAll('.column')
+    .forEach(Column.process)*/
