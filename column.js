@@ -1,21 +1,38 @@
-const Column = {
-    idCounter: 4,
+class Column {
+    constructor(id = null) {
+        const instance = this
 
-    dragged: null,
+        this.notes = []
+        const element = this.element = document.createElement('div')
+        element.classList.add('column')
+        element.setAttribute('draggable', 'true')
 
-    dropped: null,
+        if (id) {
+            element.setAttribute('data-column-id', id)
+        } else {
+            element.setAttribute('data-column-id', Column.idCounter)
+            Column.idCounter++
+        }
+        element.innerHTML =
+            `<p class="column-header">В плане</p>
+            					<div data-notes></div>
+					<p class="column-footer">
+						<span data-action-addNote class="action">+ Добавить карточку</span>
+                </p>`
 
-    process(columnElement) {
-        const spanAction_addNote = columnElement.querySelector('[data-action-addNote]')
+        const spanAction_addNote = element.querySelector('[data-action-addNote]')
 
         spanAction_addNote.addEventListener('click', function (event) {
-            const noteElement = Note.create()
-            columnElement.querySelector('[data-notes]').append(noteElement)
-            noteElement.setAttribute('contenteditable', 'true')
-            noteElement.focus()
+
+
+            const note = new Note
+            instance.add(note)
+            note.element.setAttribute('contenteditable', 'true')
+            note.element.focus()
+
         })
 
-        const headerElement = columnElement.querySelector('.column-header')
+        const headerElement = element.querySelector('.column-header')
         headerElement.addEventListener('dblclick', function (event) {
             headerElement.setAttribute('contenteditable', true)
             headerElement.focus()
@@ -25,40 +42,30 @@ const Column = {
             headerElement.removeAttribute('contenteditable', true)
         })
 
-        columnElement.addEventListener('dragstart', Column.dragstart)
-        columnElement.addEventListener('dragend', Column.dragend)
+        element.addEventListener('dragstart', this.dragstart.bind(this))
+        element.addEventListener('dragend', this.dragend.bind(this))
 
         // columnElement.addEventListener('dragenter', Column.dragenter)
-        columnElement.addEventListener('dragover', Column.dragover)
+        element.addEventListener('dragover', this.dragover.bind(this))
         //columnElement.addEventListener('dragleave', Column.dragleave)
 
-        columnElement.addEventListener('drop', Column.drop)
-    },
+        element.addEventListener('drop', this.drop.bind(this))
+    }
 
-    create(id = null) {
-        const columnElement = document.createElement('div')
-        columnElement.classList.add('column')
-        columnElement.setAttribute('draggable', 'true')
-        
-        if (id) {
-            columnElement.setAttribute('data-column-id', id)
-        } else {
-            columnElement.setAttribute('data-column-id', Column.idCounter)
-            Column.idCounter++
+    add(...notes) {
+        for (const note of notes) {
+            if (!this.notes.includes(note)) {
+                this.notes.push(note)
+
+                this.element.querySelector('[data-notes]').append(note.element)
+            }
         }
-        columnElement.innerHTML =
-            `<p class="column-header">В плане</p>
-					<div data-notes></div>
-					<p class="column-footer">
-						<span data-action-addNote class="action">+ Добавить карточку</span>
-			    </p>`
+    }
 
-        Column.process(columnElement)
-        return columnElement
-    },
+
 
     dragstart(event) {
-        Column.dragged = this
+        Column.dragged = this.element
         Column.dragged.classList.add('dragged')
 
         event.stopPropagation()
@@ -66,7 +73,7 @@ const Column = {
         document
             .querySelectorAll('.note')
             .forEach(noteElement => noteElement.removeAttribute('draggable'))
-    },
+    }
 
     dragend(event) {
         Column.dragged.classList.remove('dragged')
@@ -75,62 +82,72 @@ const Column = {
         document
             .querySelectorAll('.note')
             .forEach(noteElement => noteElement.setAttribute('draggable', true))
-    },
+
+        document.querySelectorAll('.column')
+            .forEach(columnElement => columnElement.classList.remove('under'))
+
+        Application.save()
+    }
 
     /*dragenter(event) {
-        if (!Column.dragged || Column.dragged === this) {
+        if (!Column.dragged || Column.dragged === this.element) {
             return
         }
-        this.classList.add('under')
+        this.element.classList.add('under')
         console.log('dragenter')
     },*/
     dragover(event) {
 
         event.preventDefault()
         event.stopPropagation()
-        if (Column.dragged === this) {
+        if (Column.dragged === this.element) {
             if (Column.dropped) {
                 Column.dropped.classList.remove('under')
             }
             Column.dropped = null
         }
 
-        if (!Column.dragged || Column.dragged === this) {
+        if (!Column.dragged || Column.dragged === this.element) {
             return
         }
-        Column.dropped = this
+        Column.dropped = this.element
         document
             .querySelectorAll('.column')
             .forEach(columnElement => columnElement.classList.remove('under'))
 
-        this.classList.add('under')
-    },
+        this.element.classList.add('under')
+    }
     /*dragleave(event) {
-        if (!Column.dragged || Column.dragged === this) {
+        if (!Column.dragged || Column.dragged === this.element) {
             return
         }
-        this.classList.remove('under')
+        this.element.classList.remove('under')
         console.log('dragleave')
     },*/
 
     drop() {
         if (Note.dragged) {
-            return this.querySelector('[data-notes]').append(Note.dragged)
+            return this.element.querySelector('[data-notes]').append(Note.dragged)
         }
 
         else if (Column.dragged) {
             const children = Array.from(document.querySelector('.columns').children)
-            const indexA = children.indexOf(this)
+            const indexA = children.indexOf(this.element)
             const indexB = children.indexOf(Column.dragged)
 
             if (indexA < indexB) {
-                document.querySelector('.columns').insertBefore(Column.dragged, this)
+                document.querySelector('.columns').insertBefore(Column.dragged, this.element)
             } else {
-                document.querySelector('.columns').insertBefore(Column.dragged, this.nextElementSibling)
+                document.querySelector('.columns').insertBefore(Column.dragged, this.element.nextElementSibling)
             }
 
             document.querySelectorAll('.column').forEach(columnElement => columnElement.classList.remove('under'))
         }
     }
-
 }
+
+Column.idCounter = 0
+
+Column.dragged = null
+
+Column.dropped = null

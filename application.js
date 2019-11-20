@@ -15,6 +15,7 @@ const Application = {
             .querySelectorAll('.column')
             .forEach(columnElement => {
                 const column = {
+                    title: '',
                     id: parseInt(columnElement.getAttribute('data-column-id')),
                     noteIds: []
                 }
@@ -56,16 +57,17 @@ const Application = {
 
         const getNoteById = id => object.notes.items.find(note => note.id === id)
 
-        for (const column of object.columns.items) {
-            const columnElement = Column.create(column.id)
+        for (const { id, noteIds } of object.columns.items) {
+            const column = new Column(id)
 
-            mountePoint.append(columnElement)
+            mountePoint.append(column.element)
 
-            for (const noteid of column.noteIds) {
-                const note = getNoteById(noteid)
-               // console.log(note)
-                const noteElement = Note.create(note.id, note.content)
-                columnElement.querySelector('[data-notes]').append(noteElement)
+            for (const noteid of noteIds) {
+                const { id, content } = getNoteById(noteid)
+                // console.log(note)
+                const note = new Note(id, content)
+                column.add(note)
+                //column.element.querySelector('[data-notes]').append(note.element)
                 //console.log(note)
             }
         }
