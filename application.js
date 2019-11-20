@@ -11,7 +11,8 @@ const Application = {
             }
         }
 
-        document.querySelectorAll('.column')
+        document
+            .querySelectorAll('.column')
             .forEach(columnElement => {
                 const column = {
                     id: parseInt(columnElement.getAttribute('data-column-id')),
@@ -38,11 +39,36 @@ const Application = {
 
         const json = JSON.stringify(object)
 
-        console.log(json)
+        localStorage.setItem('trello', json)
 
-        return object
+        console.log(json)
     },
     load() {
-        
+        if (!localStorage.getItem('trello')) {
+            return
+        }
+        const mountePoint = document.querySelector('.columns')
+        mountePoint.innerHTML = ''
+
+        const object = JSON.parse(localStorage.getItem('trello'))
+
+        //console.log(object)
+
+        const getNoteById = id => object.notes.items.find(note => note.id === id)
+
+        for (const column of object.columns.items) {
+            const columnElement = Column.create(column.id)
+
+            mountePoint.append(columnElement)
+
+            for (const noteid of column.noteIds) {
+                const note = getNoteById(noteid)
+
+                const noteElement = Note.create(note.id, note.content)
+                columnElement.querySelector('[data-notes]').append(noteElement)
+                //console.log(note)
+            }
+        }
+
     }
 }
