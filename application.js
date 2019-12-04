@@ -52,6 +52,9 @@ const Application = {
         mountePoint.innerHTML = ''
 
         const object = JSON.parse(localStorage.getItem('trello'))
+        Column.idCounter = object.columns.idCounter
+        Note.idCounter = object.notes.idCounter
+        /*додано */
 
         //console.log(object)
 
